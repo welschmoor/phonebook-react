@@ -1,8 +1,15 @@
 
 
 const DeleteButton = ({children, clickHandler, id }) => {
+
+    const handleDelete = () => {
+        if (window.confirm('you sure?')) {
+            clickHandler(id)
+        }
+    }
+
     return(
-        <button onClick={() => clickHandler(id)}> { children }</button>
+        <button onClick={handleDelete}> { children }</button>
     )
 }
 

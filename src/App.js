@@ -34,12 +34,23 @@ const App = () => {
       persons.forEach(each => {
         if (each.name.toLowerCase() === newName.toLowerCase()) {abort = true};
       })
+
       if (abort) {
+        if (window.confirm('Do you want to change the number?')) {
+          const ourPerson = persons.find(each => each.name.toLowerCase() === newName.toLowerCase())
+          const updatedPerson = { ...ourPerson, number: newPhone }
+          axios
+          .put(`http://localhost:3001/persons/${ourPerson.id}`, updatedPerson )
+          .then(res=> {
+            setPersons(persons.map(each=> each.name === ourPerson.name ? updatedPerson : each ))
+          })
+          return
+        }
         alert(`name ${newName} already exists!`)
         setNewName('')
         setNewPhone('')
         return
-      }
+      } //
 
 
       const newContact = {name: newName, number: newPhone, id: uniqid() }
