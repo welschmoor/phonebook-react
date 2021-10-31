@@ -11,3 +11,30 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+h1, h2, h3 {
+  color: green;
+}
+
+.success {
+  background-color: rgb(138, 228, 138);
+  border-radius: 5px;
+  border: 2px solid green;
+  min-width: 220px;
+  max-width: 320px;
+  padding: 8px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: rgb(0, 48, 0);
+}
+.error {
+  background-color: rgb(228, 174, 138);
+  border-radius: 5px;
+  border: 2px solid rgb(128, 0, 0);
+  min-width: 220px;
+  max-width: 320px;
+  padding: 8px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: rgb(48, 0, 0);
+}

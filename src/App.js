@@ -6,6 +6,7 @@ import Searchinput from "./phoneComponents/Searchinput"
 import Form from "./phoneComponents/Form"
 import Personlist from "./phoneComponents/Personlist"
 import {getAll, postItem} from './services/persons.js'  // getAll(), create(newItem)
+import Notification from './phoneComponents/Notification'
 
 
 const App = () => {
@@ -13,8 +14,11 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newPhone, setNewPhone] = useState('')
     const [filter, setFilter] = useState('')  // only show contacts whose name .includes(filter) string
-    
+    const [notification, setNotification] = useState(null)
+    const [error, setError] = useState(null)
 
+
+    // fetching all data on mount
     useEffect(()=> {
       let unsub = false
       
@@ -24,18 +28,16 @@ const App = () => {
     },[])
   
 
-
-
     const submitHandler = (e) => {
       e.preventDefault()
 
       // checking for duplicates
-      let abort = false
+      let duplicate = false
       persons.forEach(each => {
-        if (each.name.toLowerCase() === newName.toLowerCase()) {abort = true};
+        if (each.name.toLowerCase() === newName.toLowerCase()) {duplicate = true};
       })
 
-      if (abort) {
+      if (duplicate) {
         if (window.confirm('Do you want to change the number?')) {
           const ourPerson = persons.find(each => each.name.toLowerCase() === newName.toLowerCase())
           const updatedPerson = { ...ourPerson, number: newPhone }
@@ -43,6 +45,12 @@ const App = () => {
           .put(`http://localhost:3001/persons/${ourPerson.id}`, updatedPerson )
           .then(res=> {
             setPersons(persons.map(each=> each.name === ourPerson.name ? updatedPerson : each ))
+          }).catch(error=>{
+            console.log(updatedPerson)
+            setError(`${updatedPerson.name} no longer in phone book!`)
+            setTimeout(()=>{
+              setError(null)
+            }, 4000)
           })
           return
         }
@@ -53,12 +61,16 @@ const App = () => {
       } //
 
 
-      const newContact = {name: newName, number: newPhone, id: uniqid() }
+      const newContact = {name: newName.trim(), number: newPhone.trim(), id: uniqid() }
       postItem(newContact)
       .then(data=> {
         setPersons([...persons, data ])
         setNewName('')
-        setNewPhone('')       
+        setNewPhone('')   
+        setNotification(`${data.name} added to contacts!`) 
+        setTimeout(()=>{
+          setNotification(null)
+        }, 4000)   
       })
     }
 
@@ -84,11 +96,14 @@ const App = () => {
       })
     }
 
+
     return (
     <center>
         <h1>Phonebook</h1>
         <Searchinput onChange={searchInputHandler} />
         <h2>+Add contact</h2>
+        <Notification message={notification} whatkind={"success"} />
+        <Notification message={error} whatkind={"error"} />
         <Form sending={{submitHandler, newName, inputHandler, inputHandler2, newPhone}}/>
         <br/>
     
